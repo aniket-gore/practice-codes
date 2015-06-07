@@ -16,9 +16,38 @@ BLINK=$(tput blink)
 REVERSE=$(tput smso)
 UNDERLINE=$(tput smul)
 
-printf "${BLUE}${UNDERLINE}Created project directory at ${CYAN}$1 ${NORMAL}\n"
 
+MSG="${RED}Help from @aniket${NORMAL}:"
+ONLY_SOURCE=false
+
+while getopts ':s' opt; do
+    case "$opt" in
+        s) ONLY_SOURCE=true;;
+        [?])    echo $MSG
+                echo -e "${BLUE}Usage:${NORMAL} \$createProjectDirectory [OPTIONS] [path-to-the-project] [project-name]"
+                echo "${BLUE}Options:${NORMAL} -s Specify if only src needs to be created"
+                exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+
+
+if [ $# -ne 2 ]; then
+    echo $MSG
+    echo "${BLUE}Usage:${NORMAL} $createProjectDirectory [OPTIONS] [path-to-the-project] [project-name]"
+    echo "${BLUE}Options:${NORMAL} -s Specify if only src needs to be created"
+    exit 1
+fi
+
+
+printf "${BLUE}${UNDERLINE}Created project directory at ${CYAN}$1 ${NORMAL}\n"
 cd $1
-mkdir -p $2/{src,doc,bin,lib}
+
+if $ONLY_SOURCE; then
+    mkdir -p $2/src
+else
+    mkdir -p $2/{src,doc,bin,lib}
+fi
+
 
 touch $2/{README.txt,Makefile,logs.txt}
