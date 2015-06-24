@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# This script demonstrates keyboard inputs in shell scripts
+
+set +x
+
+firstNumber=0
+secondNumber=0
+
+perform_arithmetic()
+{
+    echo "firstNumber + secondNumber = $((firstNumber + secondNumber))"
+    echo "firstNumber - secondNumber = $((firstNumber - secondNumber))"
+    echo "firstNumber * secondNumber = $((firstNumber * secondNumber))"
+    echo "firstNumber / secondNumber = $((firstNumber / secondNumber))"
+    echo "firstNumber ** secondNumber = $((firstNumber ** secondNumber))"
+    echo "firstNumber % secondNumber = $((firstNumber % secondNumber))"
+}
+
+echo -n "Enter your name:"
+read name
+echo "Hi $name, you need to enter two numbers."
+echo -n "Enter the first number:"
+read firstNumber
+echo -n "Enter the second number:"
+read secondNumber
+
+# iterate untill second number is -ne 0
+until [ "$secondNumber" -ne  "0" ]; do
+    echo "[ERROR] Second number cannot be zero."
+    echo -n "Enter the second number:"
+    read secondNumber
+done
+
+perform_arithmetic
