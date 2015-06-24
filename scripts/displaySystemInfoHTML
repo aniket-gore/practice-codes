@@ -5,7 +5,7 @@
 # Turn tracing on/off
 # set -x :Trace on
 # set +x :Trace off
-set -x
+set +x
 
 #-------------constants------------------
 TITLE="My System Info"
@@ -34,35 +34,83 @@ filesystem_space()
 # needs superuser privileges to execute
 user_space()
 {
+    echo "<h2>Space used by each user in home directory in bytes:</h2>"
     # check the numeric user id
     if [ "$(id -u)" = "0" ]; then
-        echo "<h2>Space used by each user in home directory in bytes:</h2>"
         du -s /home/* | sort -nr
     else
         # redirect the error message to standard error
-        echo "Access denied. Not a superuser." >&2
-        # exit with exit code of 1
-        exit 1
+#         echo "Access denied. Not a superuser." >&2
+        echo "Cannot generate user space report! Access denied. Not a superuser."
     fi
 }
 
 
-#---------Main---------------------
-# using here document
-cat<<- _EOF_
-    <html>
-        <head>
-            $TITLE for <b>$HOSTNAME</b>
-        </head>
-        <body>
-            <h1>$TITLE:</h1>
-            <p>$TIMESTAMP</p>
-            # command substitution
-            $(system_info)
-            $(show_uptime)
-            $(filesystem_space)
-            $(user_space)
-        </body>
-    </html>
+populate_html()
+{
+    # using here-document
+    cat<<- _EOF_
+        <html>
+            <head>
+                $TITLE for <b>$HOSTNAME</b>
+            </head>
+            <body>
+                <h1>$TITLE:</h1>
+                <p>$TIMESTAMP</p>
+                <!-- command substitution -->
+                $(system_info)
+                $(show_uptime)
+                $(filesystem_space)
+                $(user_space)
+            </body>
+        </html>
 _EOF_
-exit 0
+}
+
+usage()
+{
+    echo "Usage: displaySystemInfoHTML [[[-f file] [-i] | [-h]]"
+}
+
+
+#-------main------------------
+interactive=
+filename=~/system-info.html
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -f | --file )           shift
+                                filename=$1
+                                ;;
+        -i | --interactive )    interactive=1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+if [ "$interactive" = "1" ]; then
+    response=
+    echo -n "Enter the output filename [$filename]: "
+    read response 
+    # check if string not empty
+    if [ -n "$response" ]; then
+        filename=$response
+    fi
+    
+    # check if file already exists and is a regular file
+    if [ -f "$filename" ]; then
+        echo -n "File exists. Do you want to overwrite? [y/n] "
+        read response
+        if [ "$response" != "y" ]; then
+            echo "Exiting..."
+            exit 1
+        fi
+    fi
+fi
+
+populate_html > $filename

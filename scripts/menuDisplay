@@ -26,6 +26,7 @@ display_free_memory()
 
 #-------------main---------------------
 menu_selection=
+# used classic TEST command
 until [ "$menu_selection" = "0" ]; do
     echo "
         Available menu options:
