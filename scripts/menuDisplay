@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# This script demonstrates menu display
+
+#--------functions-------------------
+redisplay_menu()
+{
+    echo -n "Press Enter to continue"
+    read
+    clear
+}
+
+display_free_disk_space()
+{
+    echo "Disk space:"
+    df -h
+    redisplay_menu
+}
+
+display_free_memory()
+{
+    echo "Free memory in MB:"
+    free -m
+    redisplay_menu
+}
+
+#-------------main---------------------
+menu_selection=
+until [ "$menu_selection" = "0" ]; do
+    echo "
+        Available menu options:
+            1) Display free disk space
+            2) Display free memory
+            0) Exit
+    "
+    echo -n "Enter your choice: "
+    read menu_selection
+
+    case $menu_selection in
+        1 ) display_free_disk_space 
+            ;;
+        2 ) display_free_memory
+            ;;
+        0 ) exit 0
+            ;;
+        * ) echo "Invalid selection. Please enter 1, 2 or 0." 
+    esac
+done
