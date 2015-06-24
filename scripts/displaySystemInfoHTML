@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# This script produces an HTML page displaying my system info
+
+# Turn tracing on/off
+# set -x :Trace on
+# set +x :Trace off
+set -x
+
+#-------------constants------------------
+TITLE="My System Info"
+DATE_MODIFIED=$(date +"%A, %d %B, %Y")
+TIMESTAMP="Updated on $DATE_MODIFIED by $USER"
+
+
+#-----Functions---------------
+system_info()
+{
+    echo "System Info"
+}
+
+show_uptime()
+{
+    echo "<h2>System uptime:</h2>"
+    uptime
+}
+
+filesystem_space()
+{
+    echo "<h2>File System space:</h2>"
+    df -h
+}
+
+# needs superuser privileges to execute
+user_space()
+{
+    # check the numeric user id
+    if [ "$(id -u)" = "0" ]; then
+        echo "<h2>Space used by each user in home directory in bytes:</h2>"
+        du -s /home/* | sort -nr
+    else
+        # redirect the error message to standard error
+        echo "Access denied. Not a superuser." >&2
+        # exit with exit code of 1
+        exit 1
+    fi
+}
+
+
+#---------Main---------------------
+# using here document
+cat<<- _EOF_
+    <html>
+        <head>
+            $TITLE for <b>$HOSTNAME</b>
+        </head>
+        <body>
+            <h1>$TITLE:</h1>
+            <p>$TIMESTAMP</p>
+            # command substitution
+            $(system_info)
+            $(show_uptime)
+            $(filesystem_space)
+            $(user_space)
+        </body>
+    </html>
+_EOF_
+exit 0
