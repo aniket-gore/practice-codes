@@ -17,6 +17,7 @@ TIMESTAMP="Updated on $DATE_MODIFIED by $USER"
 system_info()
 {
     echo "System Info"
+    uname -osp
 }
 
 show_uptime()
@@ -35,14 +36,22 @@ filesystem_space()
 user_space()
 {
     echo "<h2>Space used by each user in home directory in bytes:</h2>"
+    format="%8s%10s%10s   %-s\n"
+    printf "$format" "Dirs" "Files" "Blocks" "Directory"
+    printf "$format" "----" "-----" "------" "---------"
     # check the numeric user id
     if [ "$(id -u)" = "0" ]; then
-        du -s /home/* | sort -nr
+        dir_list="/home/*"
     else
-        # redirect the error message to standard error
-#         echo "Access denied. Not a superuser." >&2
-        echo "Cannot generate user space report! Access denied. Not a superuser."
+        dir_list="$HOME"
     fi
+
+    for user_dir in $dir_list ; do
+        files=$(find $user_dir -type f | wc -l)
+        directories=$(find $user_dir -type d | wc -l)
+        blocks=$(du -s $user_dir)
+       printf "$format" $files $directories $blocks
+    done
 }
 
 
@@ -96,12 +105,12 @@ done
 if [ "$interactive" = "1" ]; then
     response=
     echo -n "Enter the output filename [$filename]: "
-    read response 
+    read response
     # check if string not empty
     if [ -n "$response" ]; then
         filename=$response
     fi
-    
+
     # check if file already exists and is a regular file
     if [ -f "$filename" ]; then
         echo -n "File exists. Do you want to overwrite? [y/n] "
