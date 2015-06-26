@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# This script demonstrates error-handling
+
+LOCATION=$(basename $0)
+
+# name of file= programname_processID_randomnumber
+# i.e. file name is easily identifiable and unpredictable
+TEMPFILE="~/$0_$$_$RANDOM"
+
+trap clean_up SIGHUP SIGINT SIGTERM
+
+function clean_up() {
+    rm -f $TEMPFILE
+    exit $1
+}
+
+function display_error() {
+    # use curly braces to separate from surrounding text
+    echo "${LOCATION}: ${1:-"Unknown error"}" 1>&2
+    clean_up 1
+}
+
+echo "Demo example."
+display_error "$LINENO: Error occurred."
+clean_up
