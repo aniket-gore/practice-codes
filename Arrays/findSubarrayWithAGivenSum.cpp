@@ -17,7 +17,7 @@ Then, in step 2), we just need to find whether we have 2 same cumulative sums wh
 void findSubarrayWithAGivenSum(int *arr, int length, int sum){
 	int curr_sum = arr[0];
 	int start = 0;
-	for(int i=1; i<length; i++){
+	for(int i=1; i<=length; i++){
 		while(curr_sum > sum && start < i-1){
 			curr_sum -= arr[start];
 			start++;
@@ -26,7 +26,9 @@ void findSubarrayWithAGivenSum(int *arr, int length, int sum){
 			cout<<endl<<"Subarray with sum = "<<sum<<" found at index = "<<start<<" to "<<i-1<<endl;
 			return;
 		}
-		curr_sum += arr[i];
+        if(i<len){
+    		curr_sum += arr[i];
+        }
 	}
 	cout<<endl<<"Subarray not found."<<endl;
 }
