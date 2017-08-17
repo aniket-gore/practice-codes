@@ -24,7 +24,12 @@ bool determineIfNumberColorful(int num){
 			index = i+1;
 		}
 		productVector.push_back(digit);
-		uniqueProductMap[digit] = 1;
+		if(uniqueProductMap.find(digit) == uniqueProductMap.end()){
+			uniqueProductMap[digit] = 1;
+		}
+		else{
+			return false;
+		}
 	}
 	return true;
 }
